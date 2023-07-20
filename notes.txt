@@ -1,0 +1,14 @@
+Design Decisions.
+
+- Storing data in in-memory database or in a hashtable? I would go with in-memory database. Because if I use hashtable then my state is tied to an instance of a server. This makes scaling up tricky.
+
+
+/*
+HTML5 video JS controls.
+Link to Video Mapping
+sockets to link mapping
+
+UX tradeoff
+- pause everyone when new person joins to sync everyone.
+- or let everyone be out of sync and let them catch up on their own.
+*/

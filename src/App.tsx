@@ -2,6 +2,9 @@ import { Box, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { Routes, Route } from "react-router-dom";
 import WatchSession from "./routes/WatchSession";
 import CreateSession from "./routes/CreateSession";
+import TestSession from "./routes/TestSession";
+
+import React, { useState, useEffect } from 'react';
 
 const darkTheme = createTheme({
   palette: {
@@ -10,6 +13,13 @@ const darkTheme = createTheme({
 });
 
 const App = () => {
+  // const [dataFromBackend, setDataFromBackend] = useState<string>('');
+  // useEffect(() => {
+  //   fetch('/api/data') // Change the endpoint to match your backend API route
+  //     .then((response) => response.json())
+  //     .then((data) => setDataFromBackend(data.message))
+  //     .catch((error) => console.error(error));
+  // }, []);
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
@@ -22,8 +32,11 @@ const App = () => {
         justifyContent="center"
         gap={1}
       >
+        
         <Routes>
           <Route path="/" element={<CreateSession />} />
+          <Route path="/test" element={<TestSession />} />
+          
           <Route path="/create" element={<CreateSession />} />
           <Route path="/watch/:sessionId" element={<WatchSession />} />
         </Routes>
