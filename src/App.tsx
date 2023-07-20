@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import WatchSession from "./routes/WatchSession";
 import CreateSession from "./routes/CreateSession";
 import TestSession from "./routes/TestSession";
+import io from 'socket.io-client';
 
 import React, { useState, useEffect } from 'react';
 
@@ -11,15 +12,10 @@ const darkTheme = createTheme({
     mode: "dark",
   },
 });
+const backendUrl = 'http://198.199.76.102:5000';
 
 const App = () => {
-  // const [dataFromBackend, setDataFromBackend] = useState<string>('');
-  // useEffect(() => {
-  //   fetch('/api/data') // Change the endpoint to match your backend API route
-  //     .then((response) => response.json())
-  //     .then((data) => setDataFromBackend(data.message))
-  //     .catch((error) => console.error(error));
-  // }, []);
+  
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />

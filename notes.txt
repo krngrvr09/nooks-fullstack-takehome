@@ -12,3 +12,5 @@ UX tradeoff
 - pause everyone when new person joins to sync everyone.
 - or let everyone be out of sync and let them catch up on their own.
 */
+
+What is the problem? I am not able to communicate with the backend server using socket.io library.
