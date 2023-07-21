@@ -1,23 +1,39 @@
 import { Box, Button } from "@mui/material";
 import React, { useRef, useState } from "react";
 import ReactPlayer from "react-player";
+import {io, Socket} from 'socket.io-client';
 
 interface VideoPlayerProps {
   url: string;
   hideControls?: boolean;
+  socket: Socket;
+  sessionId: string;
+
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, hideControls }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, hideControls, socket, sessionId }) => {
   const [hasJoined, setHasJoined] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const player = useRef<ReactPlayer>(null);
 
+  socket.on('videoPlay', (data) => {
+    console.log('videoPlay from server:', data);
+    // player.current?.seekTo(data.time, 'seconds');
+    player.current?.seekTo(data.time, 'seconds');
+    // player.current?.play();
+    
+  });
+  
+
   const handleReady = () => {
+    console.log("Video ready");
     setIsReady(true);
+    socket.emit('videoReady', { room: sessionId });
   };
 
   const handleEnd = () => {
     console.log("Video ended");
+    socket.emit('videoEnd', { room: sessionId });
   };
 
   const handleSeek = (seconds: number) => {
@@ -38,6 +54,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, hideControls }) => {
       "User played video at time: ",
       player.current?.getCurrentTime()
     );
+    socket.emit('videoPlay', { room: sessionId });
+
   };
 
   const handlePause = () => {
@@ -45,10 +63,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, hideControls }) => {
       "User paused video at time: ",
       player.current?.getCurrentTime()
     );
+    socket.emit('videoPause', { room: sessionId });
   };
 
   const handleBuffer = () => {
     console.log("Video buffered");
+    socket.emit('videoBufferStart', { room: sessionId });
+  };
+
+  const handleBufferEnd = () => {
+    console.log("Video buffered");
+    socket.emit('videoBufferEnd', { room: sessionId });
   };
 
   const handleProgress = (state: {
@@ -58,6 +83,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, hideControls }) => {
     loadedSeconds: number;
   }) => {
     console.log("Video progress: ", state);
+    socket.emit('videoProgress', { room: sessionId });
   };
 
   return (
@@ -86,6 +112,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, hideControls }) => {
           onPlay={handlePlay}
           onPause={handlePause}
           onBuffer={handleBuffer}
+          onBufferEnd={handleBufferEnd}
           onProgress={handleProgress}
           width="100%"
           height="100%"

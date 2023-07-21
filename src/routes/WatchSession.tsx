@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import VideoPlayer from "../components/VideoPlayer";
+import NewVideoPlayer from "../components/NewVideoPlayer";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, TextField, Tooltip } from "@mui/material";
 import LinkIcon from "@mui/icons-material/Link";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import io from 'socket.io-client';
+import {io, Socket} from 'socket.io-client';
 
 const backendUrl = 'http://198.199.76.102:5000';
 
@@ -20,11 +21,12 @@ const copyToClipboard = (content: any) => {
     unsecuredCopyToClipboard(content);
   }
 };
-
-  const { sessionId } = useParams();
+  const {sessionId} = useParams();
+  console.log('sessionId is '+sessionId)
   const navigate = useNavigate();
   const [url, setUrl] = useState<string | null>(null);
   const [dataFromBackend, setDataFromBackend] = useState<any>('');
+  const [socket, setCurSocket] = useState<Socket>(io(`${backendUrl}`));
   
   const [linkCopied, setLinkCopied] = useState(false);
   
@@ -34,10 +36,11 @@ const copyToClipboard = (content: any) => {
     const fetchData = async () => {
       const response = await fetch(`${backendUrl}/watch/${sessionId}`);
       const data = await response.json();
+
       console.log('youtube ID from backend is '+data.message);
       setUrl("https://www.youtube.com/watch?v="+data.message);
 
-      const socket = io(`${backendUrl}`);
+      // const socket = io(`${backendUrl}`);
 
       socket.on('connect', () => {
         console.log('Connected to socket.io server');
@@ -59,11 +62,15 @@ const copyToClipboard = (content: any) => {
         console.log('screenClick from server:', data);
       });
 
+      
+
+      setCurSocket(socket);
 
 
     };
-
-    fetchData();
+    if (sessionId){
+        fetchData();
+    }
     // load video by session ID -- right now we just hardcode a constant video but you should be able to load the video associated with the session
 
     //TODO: if session ID doesn't exist, you'll probably want to redirect back to the home / create session page
@@ -118,7 +125,12 @@ const copyToClipboard = (content: any) => {
             </Button>
           </Tooltip>
         </Box>
-        <VideoPlayer url={url} />;
+        
+        {sessionId !== undefined && url !== undefined ? (
+        <NewVideoPlayer url={url} socket={socket} sessionId={sessionId} />
+      ) : (
+        <p>Loading...</p> // Display a loading message or handle the case when 'sessionId' or 'url' is undefined
+      )}
       </>
     );
   }

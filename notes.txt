@@ -27,4 +27,16 @@ Okay, so what do I need to do?
         - I will check if a room with this uuid exists(same map as the uuid to video link), create a new room with the uuid. and add this socket to that room. and update a map that stores the mapping between socket -> room.
         - When I receive a play message, I will check which room this socket exists in and broadcast to that room.
     - uuid is mapped to video link.
-    - 
+- 
+
+- OKAY, SO HOW DO WE SYNC VIDEOS. 
+    - Find out how to play/pause and seek video in youtube API. I have the handlers. If I play/pause based on someone's actions. When other videos are played/paused. 
+     -Let's start with basic - start, timestamp. Pause, timestamp.
+
+
+- How to handle different buffer speeds?
+    - Play/Pause synchronization
+    - adaptive bitrate streaming
+    - network conn. indicators.
+- Clock drift, if I am storing last timestamp for late joiners.
+    - often within a few ms, which is fine in our case.
