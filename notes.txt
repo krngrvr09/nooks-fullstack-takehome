@@ -13,4 +13,18 @@ UX tradeoff
 - or let everyone be out of sync and let them catch up on their own.
 */
 
-What is the problem? I am not able to communicate with the backend server using socket.io library.
+Okay, so what do I need to do?
+- Add the joining functionality to a link. People can join through link. They are shown a webpage where they can see, this user joined/this user left. *only people in that room*.
+- When a user clicks anywhere in the screen, everyone *in that room* is notified of the click.
+- In the joining functionality the youtube video starts playing for everyone from the start.
+- When someone pauses/plays the video, everyone else's video pauses/plays. - not synced.
+- We keep track of state, so that when a new person joins, they can catch up to the current state.
+    - When a user first joins, do we automatically start playing the video or do we wait for them to click play?
+
+- do we store data in the DB, or do we create socket name using the video ID?
+    - I paste the video link, and a uuid is created.
+        - the backend received on-connection event. Data will be the uuid.
+        - I will check if a room with this uuid exists(same map as the uuid to video link), create a new room with the uuid. and add this socket to that room. and update a map that stores the mapping between socket -> room.
+        - When I receive a play message, I will check which room this socket exists in and broadcast to that room.
+    - uuid is mapped to video link.
+    - 

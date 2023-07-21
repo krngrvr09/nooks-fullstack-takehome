@@ -30,17 +30,32 @@ app.use(express.json());
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
-  // Handle the 'userClick' event from the frontend
-  socket.on('userClick', (data) => {
-    console.log('User clicked:', data.message);
-    // Perform any backend processing here
+  socket.on('join', (data) => {
+    console.log('join', data);
+    socket.join(data.room);
   });
-
   // Handle events from the frontend here
 
   socket.on('disconnect', () => {
     console.log('A user disconnected:', socket.id);
   });
+
+  socket.on('leave', (data) => {
+    console.log('leave', data);
+    socket.leave(data.room);
+  });
+
+  socket.on('play', (data) => {
+    console.log('play', data);
+    socket.to(data.sessionId).emit('play', data);
+  });
+
+  socket.on('screenClick', (data) => {
+    console.log('Received click event from client:', data);
+    socket.to(data.room).emit('screenClick', data);
+  });
+
+
 });
 
 
@@ -49,12 +64,14 @@ app.get('/api/data', (req, res) => {
   console.log('GET /api/data');
   res.json({ message: 'Hello from the backend!' });
 });
-
+function sleep(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
 // Example route
 app.get('/create/session/:link', (req, res) => {
-    const link = req.params.link;
+    link = req.params.link;
     console.log("youtube link is: "+link);
-    const sessionId = uuidv4();
+    sessionId = uuidv4();
     mp[sessionId] = link;
     console.log("link received: "+link+" session_id: "+sessionId);
     res.json({ message: sessionId});
@@ -66,9 +83,9 @@ app.get('/watch/:sessionId', (req, res) => {
   console.log("session id is: "+sessionId);
   const link = mp[sessionId];
   console.log("link for this session id is: "+link);
-  
-  res.json({ message: "link received: "+link+" session_id: "+sessionId});
+  res.json({ message: link});
 });
+
 // Start the server
 const port = 5000;
 server.listen(port, () => {

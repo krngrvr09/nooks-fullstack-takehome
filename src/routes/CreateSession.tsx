@@ -12,23 +12,20 @@ const CreateSession: React.FC = () => {
   const [newUrl, setNewUrl] = useState("");
   //TODO: instead of any, make a type for the response.
   const [dataFromBackend, setDataFromBackend] = useState<any>('');
+    const createSession = async () => {
+      console.log("url is "+newUrl);
+      const videoId = newUrl.split("v=")[1];
+      
+        console.log('getting data from backend /api/data');
+        const response = await fetch(`${backendUrl}/create/session/${videoId}`);
+        const data = await response.json();
+
+        console.log('sessionId from backend is '+data.message);
+        navigate(`/watch/${data.message}`);
+      
+      // setNewUrl("");
+    };
   
-  const createSession = async () => {
-    console.log("url is "+newUrl);
-    
-    // useEffect(() => {
-    console.log('getting data from backend /api/data');
-    fetch(`${backendUrl}/create/session/${newUrl}`) // Change the endpoint to match your backend API route
-    .then((response) => response.json())
-    .then((data) => setDataFromBackend(data))
-    .catch((error) => console.error(error));
-    // }, []);
-    
-    console.log('data from backend is '+dataFromBackend.message);
-    // setNewUrl("");
-    // const sessionId = uuidv4();
-    // navigate(`/watch/${dataFromBackend.message}`);
-  };
 
   return (
     <Box width="100%" maxWidth={600} display="flex" gap={1} marginTop={1}>
