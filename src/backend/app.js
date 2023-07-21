@@ -5,6 +5,7 @@ const cors = require('cors');
 const http = require('http');
 const bodyParser = require('body-parser');
 const socketIO = require('socket.io');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
@@ -17,8 +18,9 @@ const io = socketIO(server
 );
 app.use(cors());
 
-
 const mp = {};
+
+const UUIDToYoutube = {};
 
 // Middleware: Enable CORS and parse incoming JSON data
 // app.use(cors());
@@ -49,12 +51,24 @@ app.get('/api/data', (req, res) => {
 });
 
 // Example route
-app.get('/create/session', (req, res) => {
+app.get('/create/session/:link', (req, res) => {
+    const link = req.params.link;
+    console.log("youtube link is: "+link);
     const sessionId = uuidv4();
-    mp[sessionId] = 1;
-    res.json({ message: sessionId });
+    mp[sessionId] = link;
+    console.log("link received: "+link+" session_id: "+sessionId);
+    res.json({ message: sessionId});
   });
+
+  // Example route
+app.get('/watch/:sessionId', (req, res) => {
+  const sessionId = req.params.sessionId;
+  console.log("session id is: "+sessionId);
+  const link = mp[sessionId];
+  console.log("link for this session id is: "+link);
   
+  res.json({ message: "link received: "+link+" session_id: "+sessionId});
+});
 // Start the server
 const port = 5000;
 server.listen(port, () => {

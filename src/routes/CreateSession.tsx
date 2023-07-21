@@ -2,15 +2,32 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, TextField } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
+import React, { useEffect } from 'react'
+
+const backendUrl = 'http://198.199.76.102:5000';
+
 
 const CreateSession: React.FC = () => {
   const navigate = useNavigate();
   const [newUrl, setNewUrl] = useState("");
-
+  //TODO: instead of any, make a type for the response.
+  const [dataFromBackend, setDataFromBackend] = useState<any>('');
+  
   const createSession = async () => {
-    setNewUrl("");
-    const sessionId = uuidv4();
-    navigate(`/watch/${sessionId}`);
+    console.log("url is "+newUrl);
+    
+    // useEffect(() => {
+    console.log('getting data from backend /api/data');
+    fetch(`${backendUrl}/create/session/${newUrl}`) // Change the endpoint to match your backend API route
+    .then((response) => response.json())
+    .then((data) => setDataFromBackend(data))
+    .catch((error) => console.error(error));
+    // }, []);
+    
+    console.log('data from backend is '+dataFromBackend.message);
+    // setNewUrl("");
+    // const sessionId = uuidv4();
+    // navigate(`/watch/${dataFromBackend.message}`);
   };
 
   return (
