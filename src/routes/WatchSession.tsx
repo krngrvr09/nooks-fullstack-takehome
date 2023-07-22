@@ -1,77 +1,66 @@
 import { useEffect, useState } from "react";
-// import VideoPlayer from "../components/VideoPlayer";
 import NewVideoPlayer from "../components/NewVideoPlayer";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, TextField, Tooltip } from "@mui/material";
 import LinkIcon from "@mui/icons-material/Link";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import {io, Socket} from 'socket.io-client';
-import UseSocket from './UseSocket';
 
 const backendUrl = 'http://198.199.76.102:5000';
 
 
 const WatchSession: React.FC = () => {
-  // Source: https://stackoverflow.com/questions/71873824/copy-text-to-clipboard-cannot-read-properties-of-undefined-reading-writetext
-  const unsecuredCopyToClipboard = (text: any) => { const textArea = document.createElement("textarea"); textArea.value=text; document.body.appendChild(textArea); textArea.focus();textArea.select(); try{document.execCommand('copy')}catch(err){console.error('Unable to copy to clipboard',err)}document.body.removeChild(textArea)};
 
-const copyToClipboard = (content: any) => {
-  if (window.isSecureContext && navigator.clipboard) {
-    navigator.clipboard.writeText(content);
-  } else {
-    unsecuredCopyToClipboard(content);
-  }
-};
+  // `navigator.clipboard` is only available in secure contexts (HTTPS), so we need to use a workaround for development. See notes.txt.
+  const unsecuredCopyToClipboard = (text: any) => { 
+    const textArea = document.createElement("textarea");
+    textArea.value=text;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try{
+      document.execCommand('copy')
+    }
+    catch(err){
+      console.error('Unable to copy to clipboard',err)
+    }
+    document.body.removeChild(textArea)
+  };
+
+  const copyToClipboard = (content: any) => {
+    if (window.isSecureContext && navigator.clipboard) {
+      navigator.clipboard.writeText(content);
+    } else {
+      unsecuredCopyToClipboard(content);
+    }
+  };
+
+
   const {sessionId} = useParams();
   console.log('sessionId is '+sessionId)
   const navigate = useNavigate();
-  const [url, setUrl] = useState<string | null>(null);
-  const [dataFromBackend, setDataFromBackend] = useState<any>('');
-  // const [socket, setCurSocket] = useState<Socket>();
-  // const socket = UseSocket(backendUrl);
-  
+  const [url, setUrl] = useState<string | null>(null);  
   const [linkCopied, setLinkCopied] = useState(false);
   
+
   useEffect(() => {
-    // setCurSocket(io(`${backendUrl}`));
     console.log('getting youtube url from session id: '+sessionId);
-    // console.log("socket id is "+socket.id);
     const fetchData = async () => {
       const response = await fetch(`${backendUrl}/watch/${sessionId}`);
       const data = await response.json();
 
       console.log('youtube ID from backend is '+data.message);
       setUrl("https://www.youtube.com/watch?v="+data.message);
-
-      // const socket = io(`${backendUrl}`);
-
-      
-
-      // document.addEventListener('click', (event) => {
-      //   // Emit a custom event 'screenClick' to the server
-      //   console.log("user clicked");
-      //   socket.emit('screenClick', { x: event.clientX, y: event.clientY , room: sessionId});
-      // });
-
-      // socket.on('screenClick', (data) => {
-      //   console.log('screenClick from server:', data);
-      // });
-
-      
-
-      // setCurSocket(socket);
-
-
     };
+
     if (sessionId){
         fetchData();
     }
-    // load video by session ID -- right now we just hardcode a constant video but you should be able to load the video associated with the session
-
-    //TODO: if session ID doesn't exist, you'll probably want to redirect back to the home / create session page
-      
+    else{
+      //TODO: redirect to home /create page.
+    }     
   }, [sessionId]);
 
+  
   if (!!url) {
     return (
       <>

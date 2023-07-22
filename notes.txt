@@ -44,5 +44,31 @@ Okay, so what do I need to do?
 - I have just added external controls from a demo app on github.
 - Todo:
     - Figure out why am I not seeing the seek bar.
+        - Seek bar fixed and I am able to sync seek.
     - Sync play and pause.
-    - Sync seek.
+        - done but without timestamps.
+
+
+Note:
+- Not leaving the room when disconnected. The internal mapping in socket.io library will likely keep growing. With more time, I would have mapped the socket to the room and removed the socket from the room when disconnected.
+- To allow new joinees to see the updated video state, I had to choose between two design decisions.
+    1. Keep broadcasting the current play time to the room, as the video is playing. As soon as the new person will join the room, they will also receive the current play time and will be able to catch up.
+    2. Keep track of when the video was last started or stopped and what was the status of the seek bar(called `seekVal`). Eg. If the video is paused, we will track that the status is paused and the seek bar is at 5% - seekVal = 0.05. If the video is played, we will track the same information. This way, when the new person joins, they will first check the the last play status. If the last recorded status is pause, then the seek the video to seekVal. If the last recorded status is play, then calculate the time elapsed, divide it by the total length of the video to find out how much you should add to `seekVal` to predict where the video would be. This approach is better because we send very minimal data.
+- I send `seekVal` with every play and pause message. This way, members who might have gotten out of sync, have a chance to resync. They might see the video jump a little bit, but they will be in sync.
+- Right now the state is being stored in a hashmap. If I had more time, I'd have liked to use an in-memory database like Redis. This way, I could have scaled up the server and the state would have been shared across all the instances of the server.
+- To copy the link to clipboard, I have used a workaround from stackoverflow. I check if secure context if valid, if so use navigator.clipboard, otherwise a hacky workaround using document.execCommand. Source: https://stackoverflow.com/questions/71873824/copy-text-to-clipboard-cannot-read-properties-of-undefined-reading-writetext
+- I only update the video when the user releases the seek slider. if I had more time, I would have experimented with updating the video as the user drags the slider. This would have given a more responsive feel to the user.
+
+
+Questions:
+- Do I need duration socket event now?
+- Test the new way of getting video ID. splitting by &
+- check if copy function can be taken out of watch function.
+- if sessionId is not there redirect to home page.
+- How are you using the leave event on the backend?
+- Try running locally to see if you can get around the muting problem?
+- Try removing other controls - video and space.
+- What happens when video ends?
+- What's going on with fullscreen?
+- Hide other controls and debug data.
+- Delete css
