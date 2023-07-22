@@ -143,13 +143,27 @@ class NewVideoPlayer extends Component {
 
 
   handlePlay = () => {
-    console.log('onPlay')
+    if (this.state.playing === false) {
+      console.log('onPlay')
+      this.setState({ playing: true, muted: false}, () => {
+        console.log("new playing state is: "+this.state.playing)
+        this.socket.emit('playPause', {playing: this.state.playing, room: this.sessionId, seekVal: this.state.played});
+        console.log(this.state)
+      });
+    }
     // this.setState({ playing: true })
   }
 
 
   handlePause = () => {
-    console.log('onPause')
+    if (this.state.playing === true) {
+      console.log('onPause')
+      this.setState({ playing: false, muted: false}, () => {
+        console.log("new playing state is: "+this.state.playing)
+        this.socket.emit('playPause', {playing: this.state.playing, room: this.sessionId, seekVal: this.state.played});
+        console.log(this.state)
+      });
+  }
     // this.setState({ playing: false })
   }
 
