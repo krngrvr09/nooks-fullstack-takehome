@@ -2,7 +2,7 @@ import { Box, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { Routes, Route } from "react-router-dom";
 import WatchSession from "./routes/WatchSession";
 import CreateSession from "./routes/CreateSession";
-import TestSession from "./routes/TestSession";
+// import TestSession from "./routes/UseSocket";
 import io from 'socket.io-client';
 
 import React, { useState, useEffect } from 'react';
@@ -31,7 +31,7 @@ const App = () => {
         
         <Routes>
           <Route path="/" element={<CreateSession />} />
-          <Route path="/test" element={<TestSession />} />
+          {/* <Route path="/test" element={<TestSession />} /> */}
           
           <Route path="/create" element={<CreateSession />} />
           <Route path="/watch/:sessionId" element={<WatchSession />} />

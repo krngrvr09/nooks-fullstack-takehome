@@ -6,6 +6,7 @@ import { Box, Button, TextField, Tooltip } from "@mui/material";
 import LinkIcon from "@mui/icons-material/Link";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import {io, Socket} from 'socket.io-client';
+import UseSocket from './UseSocket';
 
 const backendUrl = 'http://198.199.76.102:5000';
 
@@ -26,13 +27,15 @@ const copyToClipboard = (content: any) => {
   const navigate = useNavigate();
   const [url, setUrl] = useState<string | null>(null);
   const [dataFromBackend, setDataFromBackend] = useState<any>('');
-  const [socket, setCurSocket] = useState<Socket>(io(`${backendUrl}`));
+  // const [socket, setCurSocket] = useState<Socket>();
+  // const socket = UseSocket(backendUrl);
   
   const [linkCopied, setLinkCopied] = useState(false);
   
   useEffect(() => {
-
+    // setCurSocket(io(`${backendUrl}`));
     console.log('getting youtube url from session id: '+sessionId);
+    // console.log("socket id is "+socket.id);
     const fetchData = async () => {
       const response = await fetch(`${backendUrl}/watch/${sessionId}`);
       const data = await response.json();
@@ -42,15 +45,7 @@ const copyToClipboard = (content: any) => {
 
       // const socket = io(`${backendUrl}`);
 
-      socket.on('connect', () => {
-        console.log('I just connected to the socket.io server');
-        socket.emit('join', { room: sessionId });
-      });
-
-      socket.on('disconnect', () => {
-        console.log('I disconnected from the socket.io server');
-        socket.emit('leave', { room: sessionId });
-      });
+      
 
       // document.addEventListener('click', (event) => {
       //   // Emit a custom event 'screenClick' to the server
@@ -64,7 +59,7 @@ const copyToClipboard = (content: any) => {
 
       
 
-      setCurSocket(socket);
+      // setCurSocket(socket);
 
 
     };
@@ -127,7 +122,7 @@ const copyToClipboard = (content: any) => {
         </Box>
         
         {sessionId !== undefined && url !== undefined ? (
-        <NewVideoPlayer url={url} socket={socket} sessionId={sessionId} />
+        <NewVideoPlayer url={url} sessionId={sessionId} backendUrl={backendUrl} />
       ) : (
         <p>Loading...</p> // Display a loading message or handle the case when 'sessionId' or 'url' is undefined
       )}

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { findDOMNode } from 'react-dom'
 import { hot } from 'react-hot-loader'
 import screenfull from 'screenfull'
+import {io, Socket} from 'socket.io-client';
 
 // import './reset.css'
 // import './defaults.css'
@@ -17,9 +18,9 @@ class NewVideoPlayer extends Component {
 
     constructor(props) {
         super(props);
-        this.socket = this.props.socket;
         this.sessionId = this.props.sessionId;
         this.url = this.props.url;
+        this.backendUrl = this.props.backendUrl;
     }
 
     state = {
@@ -39,6 +40,18 @@ class NewVideoPlayer extends Component {
       
 
     componentDidMount() {
+        this.socket = io(this.backendUrl);
+
+        this.socket.on('connect', () => {
+            console.log('I just connected to the socket.io server');
+            this.socket.emit('join', { room: this.sessionId });
+          });
+    
+          this.socket.on('disconnect', () => {
+            console.log('I disconnected from the socket.io server');
+            this.socket.emit('leave', { room: this.sessionId });
+          });
+        
         this.setState({ url: this.url });
         
         this.socket.on('playPause', (data) => {
