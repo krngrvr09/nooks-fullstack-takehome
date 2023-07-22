@@ -18,7 +18,7 @@ const io = socketIO(server
 );
 app.use(cors());
 
-const mp = {};
+const mp = new Map();
 
 const UUIDToYoutube = {};
 
@@ -34,17 +34,20 @@ io.on('connection', (socket) => {
     console.log('join', data);
     socket.join(data.room);
   });
-  // Handle events from the frontend here
 
   socket.on('disconnect', () => {
     console.log('A user disconnected:', socket.id);
   });
 
+  // PLAY/PAUSE Controls
   socket.on('playPause', (data) => {
     console.log('Received play event from client:', data);
+    mp.get(data.room).set("playing", data.playing);
+    mp.get(data.room).set("seekVal", data.seekVal);
     socket.to(data.room).emit('playPause', data);
   });
 
+  // SEEK Controls
   socket.on('seekchange', (data) => {
     console.log('Received seek event from client:', data);
     socket.to(data.room).emit('seekchange', data);
@@ -114,7 +117,9 @@ app.get('/create/session/:link', (req, res) => {
     link = req.params.link;
     console.log("youtube link is: "+link);
     sessionId = uuidv4();
-    mp[sessionId] = link;
+    mp.set(sessionId, new Map());
+    mp.get(sessionId).set("link", link);
+    // mp[sessionId] = link;
     console.log("link received: "+link+" session_id: "+sessionId);
     res.json({ message: sessionId});
   });
@@ -123,7 +128,9 @@ app.get('/create/session/:link', (req, res) => {
 app.get('/watch/:sessionId', (req, res) => {
   const sessionId = req.params.sessionId;
   console.log("session id is: "+sessionId);
-  const link = mp[sessionId];
+  // const link = mp[sessionId];
+  const link = mp.get(sessionId).get("link");
+  
   console.log("link for this session id is: "+link);
   res.json({ message: link});
 });
