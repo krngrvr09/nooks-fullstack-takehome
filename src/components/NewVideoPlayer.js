@@ -3,10 +3,10 @@ import { findDOMNode } from 'react-dom'
 import { hot } from 'react-hot-loader'
 import screenfull from 'screenfull'
 
-import './reset.css'
-import './defaults.css'
-import './range.css'
-import './App.css'
+// import './reset.css'
+// import './defaults.css'
+// import './range.css'
+// import './App.css'
 
 // import { version } from '../../package.json'
 import ReactPlayer from "react-player";
@@ -48,6 +48,12 @@ class NewVideoPlayer extends Component {
             });
         });
 
+        this.socket.on('seekchange', (data) => {
+            console.log('Received seek event from server:', data);
+            this.player.seekTo(parseFloat(data.played));
+            
+        });
+
     }
   
 
@@ -69,6 +75,8 @@ class NewVideoPlayer extends Component {
         this.socket.emit('playPause', {playing: this.state.playing, room: this.sessionId});
         console.log(this.state)
     });
+
+    
   }
 
   handleStop = () => {
@@ -145,6 +153,8 @@ class NewVideoPlayer extends Component {
   handleSeekMouseUp = e => {
     this.setState({ seeking: false })
     this.player.seekTo(parseFloat(e.target.value))
+    console.log("seeked to: "+this.state.played)
+    this.socket.emit('seekchange', {played: this.state.played, room: this.sessionId});
   }
 
   handleProgress = state => {
@@ -217,7 +227,7 @@ class NewVideoPlayer extends Component {
               onError={e => console.log('onError', e)}
               onProgress={this.handleProgress}
               onDuration={this.handleDuration}
-              onPlaybackQualityChange={e => console.log('onPlaybackQualityChange', e)}
+            //   onPlaybackQualityChange={e => console.log('onPlaybackQualityChange', e)}
             />
           </div>
 

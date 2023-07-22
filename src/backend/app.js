@@ -66,6 +66,11 @@ io.on('connection', (socket) => {
 
   });
 
+  socket.on('seekchange', (data) => {
+    console.log('Received seek event from client:', data);
+    socket.to(data.room).emit('seekchange', data);
+  });
+
   socket.on('videoPause', (data) => {
     console.log('Received pause event from client:', data);
     // socket.to(data.room).emit('ready', data);
