@@ -45,7 +45,8 @@ class NewVideoPlayer extends Component {
             console.log('Received play event from client:', data);
             this.setState({ playing: data.playing}, () => {
                 this.player.seekTo(parseFloat(data.seekVal));
-                console.log("new playing state is: "+this.state.playing)
+                console.log("new playing state is: "+data.playing)
+                console.log("seeked to: "+data.seekVal);
             });
         });
 
@@ -145,7 +146,10 @@ class NewVideoPlayer extends Component {
 
   handleDuration = (duration) => {
     console.log('onDuration', duration)
-    this.setState({ duration })
+    this.setState({ duration }, () => {
+        console.log("sending duration to server: "+this.state.duration);
+        this.socket.emit('duration', {duration: this.state.duration, room: this.sessionId});
+  });
   }
 
   handleClickFullscreen = () => {
