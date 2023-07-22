@@ -40,30 +40,9 @@ io.on('connection', (socket) => {
     console.log('A user disconnected:', socket.id);
   });
 
-  socket.on('leave', (data) => {
-    console.log('leave', data);
-    socket.leave(data.room);
-  });
-
-  socket.on('play', (data) => {
-    console.log('play', data);
-    socket.to(data.sessionId).emit('play', data);
-  });
-
-  socket.on('screenClick', (data) => {
-    console.log('Received click event from client:', data);
-    socket.to(data.room).emit('screenClick', data);
-  });
-
-  socket.on('videoReady', (data) => {
-    console.log('Received ready event from client:', data);
-    // socket.to(data.room).emit('ready', data);
-  });
-
   socket.on('playPause', (data) => {
     console.log('Received play event from client:', data);
     socket.to(data.room).emit('playPause', data);
-
   });
 
   socket.on('seekchange', (data) => {
@@ -71,30 +50,53 @@ io.on('connection', (socket) => {
     socket.to(data.room).emit('seekchange', data);
   });
 
-  socket.on('videoPause', (data) => {
-    console.log('Received pause event from client:', data);
-    // socket.to(data.room).emit('ready', data);
-  });
+// -------------------------------------------------------------
+  // socket.on('leave', (data) => {
+  //   console.log('leave', data);
+  //   socket.leave(data.room);
+  // });
 
-  socket.on('videoBufferStart', (data) => {
-    console.log('Received buffer start event from client:', data);
-    // socket.to(data.room).emit('ready', data);
-  });
+  // socket.on('play', (data) => {
+  //   console.log('play', data);
+  //   socket.to(data.sessionId).emit('play', data);
+  // });
 
-  socket.on('videoBufferEnd', (data) => {
-    console.log('Received buffer end event from client:', data);
-    // socket.to(data.room).emit('ready', data);
-  });
+  // socket.on('screenClick', (data) => {
+  //   console.log('Received click event from client:', data);
+  //   socket.to(data.room).emit('screenClick', data);
+  // });
 
-  socket.on('videoProgress', (data) => {
-    console.log('Received video Progress event from client:', data);
-    // socket.to(data.room).emit('ready', data);
-  });
+  // socket.on('videoReady', (data) => {
+  //   console.log('Received ready event from client:', data);
+  //   // socket.to(data.room).emit('ready', data);
+  // });
 
-  socket.on('videoEnd', (data) => {
-    console.log('Received end event from client:', data);
-    // socket.to(data.room).emit('ready', data);
-  });
+
+
+  // socket.on('videoPause', (data) => {
+  //   console.log('Received pause event from client:', data);
+  //   // socket.to(data.room).emit('ready', data);
+  // });
+
+  // socket.on('videoBufferStart', (data) => {
+  //   console.log('Received buffer start event from client:', data);
+  //   // socket.to(data.room).emit('ready', data);
+  // });
+
+  // socket.on('videoBufferEnd', (data) => {
+  //   console.log('Received buffer end event from client:', data);
+  //   // socket.to(data.room).emit('ready', data);
+  // });
+
+  // socket.on('videoProgress', (data) => {
+  //   console.log('Received video Progress event from client:', data);
+  //   // socket.to(data.room).emit('ready', data);
+  // });
+
+  // socket.on('videoEnd', (data) => {
+  //   console.log('Received end event from client:', data);
+  //   // socket.to(data.room).emit('ready', data);
+  // });
 
 });
 

@@ -66,6 +66,7 @@ class NewVideoPlayer extends Component {
     })
   }
 
+  // PLAY/PAUSE Controls
   handlePlayPause = () => {
     console.log('handlePlayPause')
     console.log(this.state)
@@ -75,9 +76,33 @@ class NewVideoPlayer extends Component {
         this.socket.emit('playPause', {playing: this.state.playing, room: this.sessionId});
         console.log(this.state)
     });
-
-    
   }
+
+  // MUTE Controls
+  handleToggleMuted = () => {
+    console.log('handleToggleMuted')
+    this.setState({ muted: !this.state.muted })
+  }
+
+  // SEEK Controls
+  handleSeekMouseDown = e => {
+    this.setState({ seeking: true })
+  }
+
+  // SEEK Controls
+  handleSeekChange = e => {
+    this.setState({ played: parseFloat(e.target.value) })
+  }
+
+  // SEEK Controls
+  handleSeekMouseUp = e => {
+    this.setState({ seeking: false })
+    this.player.seekTo(parseFloat(e.target.value))
+    console.log("seeked to: "+this.state.played)
+    this.socket.emit('seekchange', {played: this.state.played, room: this.sessionId});
+  }
+
+  // ----------------------------------------------------------------------
 
   handleStop = () => {
     console.log('handleStop')
@@ -93,69 +118,17 @@ class NewVideoPlayer extends Component {
     }, () => this.load(url))
   }
 
-  // handleToggleLight = () => {
-  //   this.setState({ light: !this.state.light })
-  // }
-
-  // handleToggleLoop = () => {
-  //   this.setState({ loop: !this.state.loop })
-  // }
-
-  // handleVolumeChange = e => {
-  //   this.setState({ volume: parseFloat(e.target.value) })
-  // }
-
-  handleToggleMuted = () => {
-    console.log('handleToggleMuted')
-    this.setState({ muted: !this.state.muted })
-  }
-
-  // handleSetPlaybackRate = e => {
-  //   this.setState({ playbackRate: parseFloat(e.target.value) })
-  // }
-
-  // handleOnPlaybackRateChange = (speed) => {
-  //   this.setState({ playbackRate: parseFloat(speed) })
-  // }
-
-  // handleTogglePIP = () => {
-  //   this.setState({ pip: !this.state.pip })
-  // }
-
   handlePlay = () => {
     console.log('onPlay')
     // this.setState({ playing: true })
   }
 
-  // handleEnablePIP = () => {
-  //   console.log('onEnablePIP')
-  //   this.setState({ pip: true })
-  // }
-
-  // handleDisablePIP = () => {
-  //   console.log('onDisablePIP')
-  //   this.setState({ pip: false })
-  // }
 
   handlePause = () => {
     console.log('onPause')
     // this.setState({ playing: false })
   }
 
-  handleSeekMouseDown = e => {
-    this.setState({ seeking: true })
-  }
-
-  handleSeekChange = e => {
-    this.setState({ played: parseFloat(e.target.value) })
-  }
-
-  handleSeekMouseUp = e => {
-    this.setState({ seeking: false })
-    this.player.seekTo(parseFloat(e.target.value))
-    console.log("seeked to: "+this.state.played)
-    this.socket.emit('seekchange', {played: this.state.played, room: this.sessionId});
-  }
 
   handleProgress = state => {
     console.log('onProgress', state)
