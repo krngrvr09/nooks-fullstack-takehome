@@ -5,7 +5,7 @@ import screenfull from 'screenfull'
 import {io, Socket} from 'socket.io-client';
 import ReactPlayer from "react-player";
 import Duration from './Duration'
-
+import './App.css'
 
 class NewVideoPlayer extends Component {
 
@@ -41,11 +41,11 @@ class NewVideoPlayer extends Component {
       this.socket.emit('join', { room: this.sessionId });
     });
     
-    // When the socket disconnects from backend, emit a leave event to leave the room
-    this.socket.on('disconnect', () => {
-      console.log('I disconnected from the socket.io server');
-      this.socket.emit('leave', { room: this.sessionId });
-    });
+    // // When the socket disconnects from backend, emit a leave event to leave the room
+    // this.socket.on('disconnect', () => {
+    //   console.log('I disconnected from the socket.io server');
+    //   this.socket.emit('leave', { room: this.sessionId });
+    // });
     
     // Assign url to the react player.
     this.setState({ url: this.url });
@@ -66,6 +66,11 @@ class NewVideoPlayer extends Component {
         this.player.seekTo(parseFloat(data.seekVal));
     });
 
+  }
+
+  // When the component unmounts, emit a leave event to leave the room
+  componentWillUnmount() {
+    this.socket.emit('leave', { room: this.sessionId });
   }
 
   load = url => {
@@ -123,7 +128,7 @@ class NewVideoPlayer extends Component {
   
   handleStop = () => {
     console.log('handleStop')
-    this.setState({ url: null, playing: false })
+    this.setState({ playing: false })
   }
 
 
@@ -196,7 +201,6 @@ class NewVideoPlayer extends Component {
     return (
       <div className='app'>
         <section className='section'>
-          <h1>ReactPlayer Demo</h1>
           <div className='player-wrapper'>
             <ReactPlayer
               ref={this.ref}
@@ -234,7 +238,6 @@ class NewVideoPlayer extends Component {
               <tr>
                 <th>Controls</th>
                 <td>
-                  <button onClick={this.handleStop}>Stop</button>
                   <button onClick={this.handlePlayPause}>{playing ? 'Pause' : 'Play'}</button>
                   <button onClick={this.handleClickFullscreen}>Fullscreen</button>
                   {light &&
@@ -275,26 +278,7 @@ class NewVideoPlayer extends Component {
           </table>
         </section>
         <section className='section'>
-          <table>
-            <tbody>
-              <tr>
-                <th>YouTube</th>
-                <td>
-                  {this.renderLoadButton('https://www.youtube.com/watch?v=oUFJJNQGwhk', 'Test A')}
-                  {this.renderLoadButton('https://www.youtube.com/watch?v=jNgP6d9HraI', 'Test B')}
-                  {this.renderLoadButton('https://www.youtube.com/playlist?list=PLogRWNZ498ETeQNYrOlqikEML3bKJcdcx', 'Playlist')}
-                </td>
-              </tr>
-              <tr>
-                <th>Custom URL</th>
-                <td>
-                  <input ref={input => { this.urlInput = input }} type='text' placeholder='Enter URL' />
-                  <button onClick={() => this.setState({ url: this.urlInput.value })}>Load</button>
-                </td>
-              </tr>
-              
-            </tbody>
-          </table>
+          
 
           <h2>State</h2>
 
@@ -341,13 +325,7 @@ class NewVideoPlayer extends Component {
             </tbody>
           </table>
         </section>
-        <footer className='footer'>
-          {/* Version <strong>{version}</strong> */}
-          {SEPARATOR}
-          <a href='https://github.com/CookPete/react-player'>GitHub</a>
-          {SEPARATOR}
-          <a href='https://www.npmjs.com/package/react-player'>npm</a>
-        </footer>
+        
       </div>
     )
   }

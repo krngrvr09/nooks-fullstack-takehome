@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, TextField } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import React, { useEffect } from 'react'
-
+import backendUrl from "../utils";
 // Hardcoded backend URL. I did not run the backend locally, so I used the IP address of the droplet. Change this to localhost if you are running the backend locally.
-const backendUrl = 'http://198.199.76.102:5000';
+// const backendUrl = 'http://198.199.76.102:5000';
 
 
 const CreateSession: React.FC = () => {

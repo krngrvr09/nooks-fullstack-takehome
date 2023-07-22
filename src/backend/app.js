@@ -67,6 +67,11 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('leave', (data) => {
+    console.log('User left', data);
+    socket.leave(data.room);
+  });
+
   // Disconnect event. Not leaving room - see notes.txt for details.
   socket.on('disconnect', () => {
     console.log('A user disconnected:', socket.id);
@@ -129,11 +134,14 @@ app.get('/create/session/:link', (req, res) => {
 app.get('/watch/:sessionId', (req, res) => {
   const sessionId = req.params.sessionId;
   console.log("session id is: "+sessionId);
-  
+  if(!mp.has(sessionId)){
+    res.json({ code: 404, message: "no such session id"});
+    return;
+  }
   const link = mp.get(sessionId).get("link");
   
   console.log("link for this session id is: "+link);
-  res.json({ message: link});
+  res.json({ code: 200, message: link});
 });
 
 

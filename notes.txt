@@ -1,18 +1,3 @@
-Design Decisions.
-
-- Storing data in in-memory database or in a hashtable? I would go with in-memory database. Because if I use hashtable then my state is tied to an instance of a server. This makes scaling up tricky.
-
-
-/*
-HTML5 video JS controls.
-Link to Video Mapping
-sockets to link mapping
-
-UX tradeoff
-- pause everyone when new person joins to sync everyone.
-- or let everyone be out of sync and let them catch up on their own.
-*/
-
 Okay, so what do I need to do?
 - Add the joining functionality to a link. People can join through link. They are shown a webpage where they can see, this user joined/this user left. *only people in that room*.
 - When a user clicks anywhere in the screen, everyone *in that room* is notified of the click.
@@ -55,20 +40,33 @@ Note:
     1. Keep broadcasting the current play time to the room, as the video is playing. As soon as the new person will join the room, they will also receive the current play time and will be able to catch up.
     2. Keep track of when the video was last started or stopped and what was the status of the seek bar(called `seekVal`). Eg. If the video is paused, we will track that the status is paused and the seek bar is at 5% - seekVal = 0.05. If the video is played, we will track the same information. This way, when the new person joins, they will first check the the last play status. If the last recorded status is pause, then the seek the video to seekVal. If the last recorded status is play, then calculate the time elapsed, divide it by the total length of the video to find out how much you should add to `seekVal` to predict where the video would be. This approach is better because we send very minimal data.
 - I send `seekVal` with every play and pause message. This way, members who might have gotten out of sync, have a chance to resync. They might see the video jump a little bit, but they will be in sync.
-- Right now the state is being stored in a hashmap. If I had more time, I'd have liked to use an in-memory database like Redis. This way, I could have scaled up the server and the state would have been shared across all the instances of the server.
+- Right now the state is being stored in a hashmap. If I had more time, I'd have liked to use an in-memory database like Redis. This way, I could have scaled up the server and the state would have been shared across all the instances of the server. However, that will come with it's own challenges of tracking the mapping of sockets to server instances, etc.
 - To copy the link to clipboard, I have used a workaround from stackoverflow. I check if secure context if valid, if so use navigator.clipboard, otherwise a hacky workaround using document.execCommand. Source: https://stackoverflow.com/questions/71873824/copy-text-to-clipboard-cannot-read-properties-of-undefined-reading-writetext
 - I only update the video when the user releases the seek slider. if I had more time, I would have experimented with updating the video as the user drags the slider. This would have given a more responsive feel to the user.
+- I have implemented my own controls because the iframe API wasn't giving me .play() and .pause() buttons. The code for implementing custom controls has been taken from the official react-player github repository. Source: https://github.com/cookpete/react-player/tree/master
 
 
 Questions:
 - Do I need duration socket event now?
+    - I do. I need to know the duration of the video to calculate the seekVal. And it is only available when the video is loaded.
 - Test the new way of getting video ID. splitting by &
+    - Works
+- User 1 loads, seeks and pauses. User 2 joins. It is not seeked to the value.
 - check if copy function can be taken out of watch function.
+    - Works.
 - if sessionId is not there redirect to home page.
+    - done.
 - How are you using the leave event on the backend?
+    - done.
 - Try running locally to see if you can get around the muting problem?
 - Try removing other controls - video and space.
+    - Better now. I will keep the state variables, so that they are able to verify it works?
 - What happens when video ends?
+    - It goes back to default state. Good.
 - What's going on with fullscreen?
+    - Works.
 - Hide other controls and debug data.
 - Delete css
+- Backend URL should be at one place.
+    - Done.
+- test Stop and Fullscreen.
