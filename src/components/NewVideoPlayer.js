@@ -52,7 +52,7 @@ class NewVideoPlayer extends Component {
 
         this.socket.on('seekchange', (data) => {
             console.log('Received seek event from server:', data);
-            this.player.seekTo(parseFloat(data.played));
+            this.player.seekTo(parseFloat(data.seekVal));
         });
 
     }
@@ -100,7 +100,7 @@ class NewVideoPlayer extends Component {
     this.setState({ seeking: false })
     this.player.seekTo(parseFloat(e.target.value))
     console.log("seeked to: "+this.state.played)
-    this.socket.emit('seekchange', {played: this.state.played, room: this.sessionId});
+    this.socket.emit('seekchange', {playing: this.state.playing,seekVal: this.state.played, room: this.sessionId});
   }
 
   // ----------------------------------------------------------------------

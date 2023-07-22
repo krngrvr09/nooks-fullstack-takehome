@@ -39,12 +39,21 @@ io.on('connection', (socket) => {
       console.log("sending previous data to new user");
       console.log("playing: "+mp.get(data.room).get("playing"));
       console.log("old seekVal: "+mp.get(data.room).get("seekVal"));
-      console.log("new seekVal: "+(mp.get(data.room).get("seekVal")+(Date.now()-mp.get(data.room).get("time"))/mp.get(data.room).get("duration"))/1000.0);
+      // console.log("new seekVal: "+(mp.get(data.room).get("seekVal")+(Date.now()-mp.get(data.room).get("time"))/mp.get(data.room).get("duration"))/1000.0);
       console.log("duration: "+mp.get(data.room).get("duration"));
+      if(mp.get(data.room).get("playing") == true){
+        const time_elapsed = (Date.now()-mp.get(data.room).get("time"))/1000;
+        console.log("time elapsed: "+time_elapsed);
+        const newSeekVal = (mp.get(data.room).get("seekVal")+time_elapsed/mp.get(data.room).get("duration"));
+        console.log("new seekVal: "+newSeekVal);
+        socket.emit('playPause', {playing: mp.get(data.room).get("playing"), seekVal: newSeekVal});
+      }
+      else{
+        const newSeekVal = mp.get(data.room).get("seekVal");
+        console.log("new seekVal: "+newSeekVal);
+        socket.emit('playPause', {playing: mp.get(data.room).get("playing"), seekVal: newSeekVal});
+      }
       
-      const newSeekVal = (mp.get(data.room).get("seekVal")+(Date.now()-mp.get(data.room).get("time"))/mp.get(data.room).get("duration"))/1000.0;
-      
-      socket.emit('playPause', {playing: mp.get(data.room).get("playing"), seekVal: newSeekVal});
     }
     else{
       console.log("no previous data found");
@@ -67,6 +76,9 @@ io.on('connection', (socket) => {
   // SEEK Controls
   socket.on('seekchange', (data) => {
     console.log('Received seek event from client:', data);
+    mp.get(data.room).set("playing", data.playing);
+    mp.get(data.room).set("seekVal", data.seekVal);
+    mp.get(data.room).set("time", Date.now());
     socket.to(data.room).emit('seekchange', data);
   });
 
