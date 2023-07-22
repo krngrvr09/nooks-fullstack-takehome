@@ -13,20 +13,43 @@ import ReactPlayer from "react-player";
 import Duration from './Duration'
 
 class NewVideoPlayer extends Component {
-  state = {
-    url: null,
-    pip: false,
-    playing: true,
-    controls: false,
-    light: false,
-    volume: 0.8,
-    muted: false,
-    played: 0,
-    loaded: 0,
-    duration: 0,
-    playbackRate: 1.0,
-    loop: false
-  }
+
+
+    constructor(props) {
+        super(props);
+        this.socket = this.props.socket;
+        this.sessionId = this.props.sessionId;
+        this.url = this.props.url;
+    }
+
+    state = {
+        url: null,
+        pip: false,
+        playing: false,
+        controls: false,
+        light: false,
+        volume: 0.8,
+        muted: true,
+        played: 0,
+        loaded: 0,
+        duration: 0,
+        playbackRate: 1.0,
+        loop: false
+      }
+      
+
+    componentDidMount() {
+        this.setState({ url: this.url });
+        
+        this.socket.on('playPause', (data) => {
+            console.log('Received play event from client:', data);
+            this.setState({ playing: data.playing}, () => {
+                console.log("new playing state is: "+this.state.playing)
+            });
+        });
+
+    }
+  
 
   load = url => {
     this.setState({
@@ -38,14 +61,23 @@ class NewVideoPlayer extends Component {
   }
 
   handlePlayPause = () => {
-    this.setState({ playing: !this.state.playing })
+    console.log('handlePlayPause')
+    console.log(this.state)
+    console.log("current playing state is: "+this.state.playing);
+    this.setState({ playing: !this.state.playing, muted: false}, () => {
+        console.log("new playing state is: "+this.state.playing)
+        this.socket.emit('playPause', {playing: this.state.playing, room: this.sessionId});
+        console.log(this.state)
+    });
   }
 
   handleStop = () => {
+    console.log('handleStop')
     this.setState({ url: null, playing: false })
   }
 
   handleToggleControls = () => {
+    console.log('handleToggleControls')
     const url = this.state.url
     this.setState({
       controls: !this.state.controls,
@@ -65,9 +97,10 @@ class NewVideoPlayer extends Component {
   //   this.setState({ volume: parseFloat(e.target.value) })
   // }
 
-  // handleToggleMuted = () => {
-  //   this.setState({ muted: !this.state.muted })
-  // }
+  handleToggleMuted = () => {
+    console.log('handleToggleMuted')
+    this.setState({ muted: !this.state.muted })
+  }
 
   // handleSetPlaybackRate = e => {
   //   this.setState({ playbackRate: parseFloat(e.target.value) })
@@ -83,7 +116,7 @@ class NewVideoPlayer extends Component {
 
   handlePlay = () => {
     console.log('onPlay')
-    this.setState({ playing: true })
+    // this.setState({ playing: true })
   }
 
   // handleEnablePIP = () => {
@@ -98,7 +131,7 @@ class NewVideoPlayer extends Component {
 
   handlePause = () => {
     console.log('onPause')
-    this.setState({ playing: false })
+    // this.setState({ playing: false })
   }
 
   handleSeekMouseDown = e => {
@@ -170,8 +203,8 @@ class NewVideoPlayer extends Component {
               //loop={loop}
               //playbackRate={playbackRate}
               //volume={volume}
-              //muted={muted}
-              onReady={() => console.log('onReady')}
+              muted={muted}
+              onReady={() => {console.log('onReady');console.log(this.state)}}
               onStart={() => console.log('onStart')}
               onPlay={this.handlePlay}
               //onEnablePIP={this.handleEnablePIP}
@@ -221,6 +254,14 @@ class NewVideoPlayer extends Component {
               <tr>
                 <th>Loaded</th>
                 <td><progress max={1} value={loaded} /></td>
+              </tr>
+              <tr>
+                <th>
+                  <label htmlFor='muted'>Muted</label>
+                </th>
+                <td>
+                  <input id='muted' type='checkbox' checked={muted} onChange={this.handleToggleMuted} />
+                </td>
               </tr>
             </tbody>
           </table>

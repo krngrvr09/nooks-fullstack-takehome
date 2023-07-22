@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import VideoPlayer from "../components/VideoPlayer";
+// import VideoPlayer from "../components/VideoPlayer";
 import NewVideoPlayer from "../components/NewVideoPlayer";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, TextField, Tooltip } from "@mui/material";
@@ -43,24 +43,24 @@ const copyToClipboard = (content: any) => {
       // const socket = io(`${backendUrl}`);
 
       socket.on('connect', () => {
-        console.log('Connected to socket.io server');
+        console.log('I just connected to the socket.io server');
         socket.emit('join', { room: sessionId });
       });
 
       socket.on('disconnect', () => {
-        console.log('Disconnected from socket.io server');
+        console.log('I disconnected from the socket.io server');
         socket.emit('leave', { room: sessionId });
       });
 
-      document.addEventListener('click', (event) => {
-        // Emit a custom event 'screenClick' to the server
-        console.log("user clicked");
-        socket.emit('screenClick', { x: event.clientX, y: event.clientY , room: sessionId});
-      });
+      // document.addEventListener('click', (event) => {
+      //   // Emit a custom event 'screenClick' to the server
+      //   console.log("user clicked");
+      //   socket.emit('screenClick', { x: event.clientX, y: event.clientY , room: sessionId});
+      // });
 
-      socket.on('screenClick', (data) => {
-        console.log('screenClick from server:', data);
-      });
+      // socket.on('screenClick', (data) => {
+      //   console.log('screenClick from server:', data);
+      // });
 
       
 

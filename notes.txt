@@ -40,3 +40,9 @@ Okay, so what do I need to do?
     - network conn. indicators.
 - Clock drift, if I am storing last timestamp for late joiners.
     - often within a few ms, which is fine in our case.
+
+- I have just added external controls from a demo app on github.
+- Todo:
+    - Figure out why am I not seeing the seek bar.
+    - Sync play and pause.
+    - Sync seek.

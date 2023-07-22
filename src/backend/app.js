@@ -60,9 +60,9 @@ io.on('connection', (socket) => {
     // socket.to(data.room).emit('ready', data);
   });
 
-  socket.on('videoPlay', (data) => {
+  socket.on('playPause', (data) => {
     console.log('Received play event from client:', data);
-    socket.to(data.room).emit('videoPlay', data);
+    socket.to(data.room).emit('playPause', data);
 
   });
 
